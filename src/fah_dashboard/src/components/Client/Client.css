@@ -1,0 +1,13 @@
+.heartbeat {
+    color: #ffc107;
+    -webkit-transition: color 0.25s ease-in;
+       -moz-transition: color 0.25s ease-in;
+        -ms-transition: color 0.25s ease-in;
+         -o-transition: color 0.25s ease-in;
+            transition: color 0.25s ease-in;
+}
+
+.heartbeat-show {
+    /* opacity: 1; */
+    color: #28a745;
+}

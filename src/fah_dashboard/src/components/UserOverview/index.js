@@ -32,28 +32,39 @@ class UserOverview extends React.Component {
 
         return (
             <div className="card">
-                <div className="card-header">
-                    <h4>User</h4>
-                </div>
                 <div className="card-body">
-                    <div className="row text-muted">
-                        <div className="col-auto d-flex flex-column">
-                            <strong>User: </strong>
-                            <strong>Score: </strong>
-                            <strong>WUs: </strong>
-                            <strong>Clients: </strong>
-                            <strong>Last WU: </strong>
+                    <div className="row">
+                        <div className="col">
+                            <h5 className="text-uppercase">{user && <a href={`https://stats.foldingathome.org/donor/${user.name}`}>{user.name}</a>}</h5>
                         </div>
-                        {user &&
-                            <div className="col pl-0">
-                                <div>{user.name}</div>
-                                <div>{user.score}</div>
-                                <div>{user.wus}</div>
-                                <div>{user.active_7}</div>
-                                <div>{moment.utc(user.last).local().format("YYYY-MM-DD HH:mm:ss Z")}</div>
-                            </div>
-                        }
                     </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <div className="row">
+                                <div className="col-auto text-muted">
+                                    <span><i class="fas fa-wallet"></i> {user && user.score.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
+                                </div>
+                                <div className="col-auto text-muted">
+                                    <span><i class="fas fa-hashtag"></i> {user && user.rank.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div className="row">
+                                <div className="col-auto text-muted d-flex flex-row">
+                                    <span>
+                                        <i class="fas fa-upload"></i>
+                                    </span>
+                                    <span className="pl-2">
+                                        {user && user.wus.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} <small>({user && moment.utc(user.last).local().format("YYYY-MM-DD HH:mm:ss Z")})</small>
+                                    </ span>
+                                </div>
+                                <div className="col-auto text-muted">
+                                    <span><i class="fas fa-robot"></i> {user && user.active_7}</span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
             </div>
         );
