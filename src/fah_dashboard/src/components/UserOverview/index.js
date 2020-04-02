@@ -12,23 +12,48 @@ class UserOverview extends React.Component {
         super(props);
 
         this.state = {
-            user: null
+            user: null,
+            updating: false,
+            last_updated: null
         };
+
+        this.updateTimer = null;
+
+        this.update = this.update.bind(this);
     }
 
     componentDidMount() {
+        this.update();
+        this.updateTimer = setInterval(() => this.update(), 30*60*1000);
+    }
+
+    componentWillUnmount() {
+        if (this.updateTimer) {
+            clearTimeout(this.updateTimer);
+        }
+    }
+
+    update() {
         const self = this;
         const { id } = this.props;
 
+        self.setState({
+            updating: true
+        });
+
+
         getUser(id).then((response) => { return response.json() }).then((user) => {
             self.setState({
-                user
-            });
-        })
+                user,
+                updating: false,
+                last_updated: moment().format('YYYY-MM-DD HH:mm:ss')
+            });            
+        });
+
     }
 
     render() {
-        const { user } = this.state;
+        const { user, updating, last_updated } = this.state;
 
         return (
             <div className="card">
@@ -36,6 +61,9 @@ class UserOverview extends React.Component {
                     <div className="row">
                         <div className="col">
                             <h5 className="text-uppercase">{user && <a href={`https://stats.foldingathome.org/donor/${user.name}`}>{user.name}</a>}</h5>
+                        </div>
+                        <div className="col-auto ml-auto">
+                            <span onClick={() => { this.update() }}><i className={`fas fa-sync-alt ${updating === true ? '' : ''}`}></i></span>
                         </div>
                     </div>
                     <ul class="list-group list-group-flush">
@@ -65,6 +93,9 @@ class UserOverview extends React.Component {
                             </div>
                         </li>
                     </ul>
+                    <div className="text-muted pt-3 text-right">
+                        <small>Last Updated: {last_updated ? last_updated : 'Never'}</small>
+                    </div>
                 </div>
             </div>
         );
