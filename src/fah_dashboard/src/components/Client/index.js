@@ -2,7 +2,7 @@ import React from 'react';
 import './Client.css';
 import PropTypes from 'prop-types';
 import socketIOClient from "socket.io-client";
-import { getClient, getClientSlots } from '../../utils/fah-client';
+import { getClient, getClientSlots, pauseClient, unpauseClient } from '../../utils/fah-client';
 import moment from 'moment';
 
 class Client extends React.Component {
@@ -24,6 +24,8 @@ class Client extends React.Component {
         this.animateHeartbeatTimer = null;
         this.animateHeartbeat = this.animateHeartbeat.bind(this);
         this.update = this.update.bind(this);
+        this.pause = this.pause.bind(this);
+        this.unpause = this.unpause.bind(this);
     }
 
     animateHeartbeat() {
@@ -103,6 +105,20 @@ class Client extends React.Component {
 
     }
 
+    pause() {
+        const { id } = this.props;
+        pauseClient(id).then(() => {
+
+        });
+    }
+
+    unpause() {
+        const { id } = this.props;
+        unpauseClient(id).then(() => {
+
+        });
+    }
+
     render() {
         const { client, slots, queue, heartbeat, ppd, updating } = this.state;
 
@@ -115,7 +131,9 @@ class Client extends React.Component {
                                 <h5 className="text-uppercase mb-0">{client && <a href={`http://${client.host}:7396`}>{client.name}</a>} <span className={`heartbeat ${heartbeat && 'heartbeat-show'}`}><i className={`fas fa-heartbeat`}></i></span></h5>
 
                                 <div className="ml-auto text-white">
-                                    <span onClick={() => { this.update() }}><i className={`fas fa-sync-alt ${updating === true ? '' : ''}`}></i></span>
+                                    <span onClick={() => this.unpause()}><i class="fas fa-lg fa-play-circle mr-2"></i></span>
+                                    <span onClick={() => this.pause()}><i class="fas fa-lg fa-pause-circle mr-2"></i></span>
+                                    <span onClick={() => { this.update() }}><i className={`fas fa-lg fa-sync-alt ${updating === true ? '' : ''}`}></i></span>
                                 </div>
                             </div>
                             <span className="text-muted" style={{ fontSize: '0.9rem' }}>{client && <>{client.host}:{client.port}</>}</span>

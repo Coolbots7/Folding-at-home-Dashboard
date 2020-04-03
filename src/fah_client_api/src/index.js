@@ -47,6 +47,31 @@ const clients = [
   }
 ]
 
+const telnetClientSend = (id, send) => new Promise((resolve, reject) => {
+  const client = clients.find(c => c.id == id);
+
+  if (client) {
+    let params = {
+      host: client.host,
+      port: client.port,
+      negotiationMandatory: false,
+      timeout: 3000
+    };
+
+    let connection = new Telnet();
+
+    connection.connect(params).then((prompt) => {
+      connection.send(send).then((response) => {
+        resolve(response);
+      })
+    });
+  }
+  else {
+    reject();
+  }
+
+});
+
 // defining the Express app
 const app = express();
 
@@ -80,45 +105,44 @@ app.get('/clients/:id', (req, res) => {
 app.get('/clients/:id/slots', (req, res) => {
   const { id } = req.params;
 
-  let client = clients.find(c => c.id == id);
+  telnetClientSend(id, 'slot-info').then((response) => {
+    const messages = parsePYoNMessage(response.toString());
+    console.log(messages)
 
-  if (client) {
-    let params = {
-      host: client.host,
-      port: client.port,
-      negotiationMandatory: false,
-      timeout: 3000
-    };
+    for (var i = 0; i < messages.length; i++) {
+      const message = messages[i];
+      const header = message.header;
+      var body = message.body;
 
-    let connection = new Telnet();
-    connection.connect(params).then((prompt) => {
-      connection.send('slot-info').then((response) => {
-        // console.log("response", response);
-        const messages = parsePYoNMessage(response.toString());
+      if (header.type == "slots") {
+        res.send(PYoNToJson(body));
+      }
+    }
 
-        for (var i = 0; i < messages.length; i++) {
-          const message = messages[i];
-          // console.log("message", message)
-          const header = message.header;
-          var body = message.body;
-          // console.log("body", body);
+    res.send([]);
+  })
+    .catch(() => {
+      res.send([]);
+    });
+});
 
-          if (header.type == "slots") {
-            res.send(PYoNToJson(body));
-            // res.send(body);
-            return;
-          }
-        }
+app.put('/clients/:id/status', (req, res) => {
+  const { id } = req.params;
+  const body = req.body;
 
-        res.send([]);
-      });
-    })
-      .catch((error) => {
-        res.send("Connection failed").status(500);
-      });
+  if (body.status == 'paused') {
+    telnetClientSend(id, 'pause').then((response) => {
+      res.send().status(202);
+    });
+  }
+  else if (body.status == 'unpaused') {
+    telnetClientSend(id, 'unpause').then((response) => {
+      res.send().status(202);
+    });
+
   }
   else {
-    res.status(404);
+    res.send(`Unknown status: ${body.status}`).status(400);
   }
 
 });
