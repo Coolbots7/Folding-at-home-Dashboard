@@ -70,10 +70,10 @@ class UserOverview extends React.Component {
                         <li class="list-group-item">
                             <div className="row">
                                 <div className="col-auto text-muted">
-                                    <span><i class="fas fa-wallet"></i> {user && user.score.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
+                                    <span><i class="fas fa-wallet fa-lg pr-1"></i> {user && user.score.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
                                 </div>
                                 <div className="col-auto text-muted">
-                                    <span><i class="fas fa-hashtag"></i> {user && user.rank.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
+                                    <span><i class="fas fa-hashtag fa-lg pr-1"></i> {user && user.rank.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
                                 </div>
                             </div>
                         </li>
@@ -81,14 +81,14 @@ class UserOverview extends React.Component {
                             <div className="row">
                                 <div className="col-auto text-muted d-flex flex-row">
                                     <span>
-                                        <i class="fas fa-upload"></i>
+                                        <i class="fas fa-cogs fa-lg pr-2"></i>
                                     </span>
-                                    <span className="pl-2">
+                                    <span>
                                         {user && user.wus.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} <small>({user && moment.utc(user.last).local().format("YYYY-MM-DD HH:mm:ss Z")})</small>
-                                    </ span>
+                                    </span>
                                 </div>
                                 <div className="col-auto text-muted">
-                                    <span><i class="fas fa-robot"></i> {user && user.active_7}</span>
+                                    <span><i class="fas fa-robot fa-lg pr-1"></i> {user && user.active_7}</span>
                                 </div>
                             </div>
                         </li>

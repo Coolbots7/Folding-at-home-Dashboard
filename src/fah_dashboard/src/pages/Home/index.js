@@ -3,6 +3,7 @@ import UserOverview from '../../components/UserOverview';
 import Client from '../../components/Client';
 import { getClients } from '../../utils/fah-client';
 import socketIOClient from "socket.io-client";
+import TeamOverview from '../../components/TeamOverview';
 
 class Home extends React.Component {
     constructor(props) {
@@ -44,6 +45,9 @@ class Home extends React.Component {
                 <div className="row">
                     <div className="col-12 col-md-6">
                         <UserOverview id={78476448} />
+                    </div>
+                    <div className="col">
+                        <TeamOverview id={201140} user_id={78476448} />
                     </div>
                 </div>
 

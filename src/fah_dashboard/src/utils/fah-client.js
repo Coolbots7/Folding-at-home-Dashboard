@@ -26,6 +26,19 @@ function getUser(id) {
     return fah_api(`uid/${id}`);
 }
 
+function getUserTeams(id) {
+    return fah_api(`uid/${id}/teams`)
+}
+
+
+/// ------ FAH Team ------
+function getTeam(id) {
+    return fah_api(`team/${id}`);
+}
+
+function getTeamMembers(id) {
+    return fah_api(`/team/${id}/members`);
+}
 
 /// ------ FAH Project ------
 function getProject(id) {
@@ -79,7 +92,8 @@ function unpauseClientSlot(id, slot) {
 }
 
 export {
-    getUser,
+    getUser, getUserTeams,
+    getTeam, getTeamMembers,
     getProject,
     getClients, getClient, getClientSlots, pauseClient, unpauseClient, pauseClientSlot, unpauseClientSlot
 };
