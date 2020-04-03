@@ -17,11 +17,13 @@ class Client extends React.Component {
             client: null,
             slots: null,
             queue: null,
-            ppd: null
+            ppd: null,
+            updating: false
         };
 
         this.animateHeartbeatTimer = null;
         this.animateHeartbeat = this.animateHeartbeat.bind(this);
+        this.update = this.update.bind(this);
     }
 
     animateHeartbeat() {
@@ -43,21 +45,7 @@ class Client extends React.Component {
         const self = this;
         const { id } = this.props;
 
-        getClient(id)
-            .then((res) => { return res.json(); })
-            .then((client) => {
-                self.setState({
-                    client
-                });
-            });
-
-        getClientSlots(id)
-            .then((res) => { return res.json() })
-            .then((slots) => {
-                self.setState({
-                    slots
-                });
-            });
+        this.update();
 
         const socket = socketIOClient("http://192.168.2.155:3001");
         socket.on("queue-info", (queue) => {
@@ -93,15 +81,43 @@ class Client extends React.Component {
         });
     }
 
+    update() {
+        const self = this;
+        const { id } = this.props;
+
+        getClient(id)
+            .then((res) => { return res.json(); })
+            .then((client) => {
+                self.setState({
+                    client
+                });
+            });
+
+        getClientSlots(id)
+            .then((res) => { return res.json() })
+            .then((slots) => {
+                self.setState({
+                    slots
+                });
+            });
+
+    }
+
     render() {
-        const { client, slots, queue, heartbeat, ppd } = this.state;
+        const { client, slots, queue, heartbeat, ppd, updating } = this.state;
 
         return (
             <div className="card h-100">
                 <div className="card-body">
                     <div className="row mb-3">
-                        <div className="col-auto d-flex flex-column">
-                            <h5 className="text-uppercase mb-0">{client && <a href={`http://${client.host}:7396`}>{client.name}</a>} <span className={`heartbeat ${heartbeat && 'heartbeat-show'}`}><i className={`fas fa-heartbeat`}></i></span></h5>
+                        <div className="col d-flex flex-column">
+                            <div className="d-flex flex-row">
+                                <h5 className="text-uppercase mb-0">{client && <a href={`http://${client.host}:7396`}>{client.name}</a>} <span className={`heartbeat ${heartbeat && 'heartbeat-show'}`}><i className={`fas fa-heartbeat`}></i></span></h5>
+
+                                <div className="ml-auto text-white">
+                                    <span onClick={() => { this.update() }}><i className={`fas fa-sync-alt ${updating === true ? '' : ''}`}></i></span>
+                                </div>
+                            </div>
                             <span className="text-muted" style={{ fontSize: '0.9rem' }}>{client && <>{client.host}:{client.port}</>}</span>
                             <span className="text-muted" style={{ fontSize: '0.9rem' }}><i class="fas fa-coins"></i>/DAY {ppd ? ppd.replace(/\.?\d*$/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '0'}</span>
                         </div>
