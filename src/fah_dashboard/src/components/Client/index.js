@@ -2,7 +2,7 @@ import React from 'react';
 import './Client.css';
 import PropTypes from 'prop-types';
 import socketIOClient from "socket.io-client";
-import { getClient, getClientSlots, pauseClient, unpauseClient } from '../../utils/fah-client';
+import { getClient, getClientSlots, pauseClient, unpauseClient, pauseClientSlot, unpauseClientSlot } from '../../utils/fah-client';
 import moment from 'moment';
 
 class Client extends React.Component {
@@ -26,6 +26,8 @@ class Client extends React.Component {
         this.update = this.update.bind(this);
         this.pause = this.pause.bind(this);
         this.unpause = this.unpause.bind(this);
+        this.pauseSlot = this.pauseSlot.bind(this);
+        this.unpauseSlot = this.unpauseSlot.bind(this);
     }
 
     animateHeartbeat() {
@@ -108,14 +110,28 @@ class Client extends React.Component {
     pause() {
         const { id } = this.props;
         pauseClient(id).then(() => {
-
+                this.update();
         });
     }
 
     unpause() {
         const { id } = this.props;
         unpauseClient(id).then(() => {
+            this.update();
+        });
+    }
 
+    pauseSlot(slot) {
+        const { id } = this.props;
+        pauseClientSlot(id, slot).then(() => {
+            this.update();
+        });
+    }
+
+    unpauseSlot(slot) {
+        const { id } = this.props;
+        unpauseClientSlot(id, slot).then(() => {
+            this.update();
         });
     }
 
@@ -189,16 +205,20 @@ class Client extends React.Component {
                             return (
                                 <li key={slot.id} class="list-group-item">
                                     <div className="row">
-                                        <div className="col-auto d-flex flex-column text-center">
+                                        <div className="pl-0 col-auto d-flex flex-column text-center">
                                             <strong>{slot.id}</strong>
                                             <span style={{ fontSize: '0.8rem' }} className="text-muted text-uppercase">{slot.description.substring(0, 6)}</span>
                                             <span style={{ fontSize: '0.8rem' }} className="text-muted text-uppercase"><i class="fas fa-coins"></i>/DAY {slot_queues && slot_queues[0].ppd.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
+                                            <div className="text-white">
+                                                <span onClick={() => {this.unpauseSlot(slot.id)}}><i class="fas fa-play-circle mr-2"></i></span>
+                                                <span onClick={() => {this.pauseSlot(slot.id)}}><i class="fas fa-pause-circle mr-2"></i></span>
+                                            </div>
 
                                             {/* <div className="d-flex flex-row justify-content-around">
                                         <span><strong>Idle: </strong>{slot.idle.toString()}</span>
                                     </div> */}
                                         </div>
-                                        <div className="col d-flex flex-column">
+                                        <div className="col pr-0 d-flex flex-column">
 
                                             {slot_queues && slot_queues.map((q) => {
                                                 if (slot.status !== 'PAUSED') {

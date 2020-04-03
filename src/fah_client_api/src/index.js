@@ -147,6 +147,26 @@ app.put('/clients/:id/status', (req, res) => {
 
 });
 
+app.put('/clients/:id/:slot/status', (req, res) => {
+  const { id, slot } = req.params;
+  const body = req.body;
+
+  if (body.status == 'paused') {
+    telnetClientSend(id, `pause ${slot}`).then((response) => {
+      res.send().status(202);
+    });
+  }
+  else if (body.status == 'unpaused') {
+    telnetClientSend(id, `unpause ${slot}`).then((response) => {
+      res.send().status(202);
+    });
+
+  }
+  else {
+    res.send(`Unknown status: ${body.status}`).status(400);
+  }
+});
+
 // starting the server
 // app.listen(3001, () => {
 //   console.log('listening on port 3001');

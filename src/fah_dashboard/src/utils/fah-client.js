@@ -62,8 +62,24 @@ function unpauseClient(id) {
     return client(`clients/${id}/status`, { method: 'PUT', body });
 }
 
+function pauseClientSlot(id, slot) {
+    const body = {
+        'status': 'paused'
+    };
+
+    return client(`clients/${id}/${slot}/status`, { method: 'PUT', body });
+}
+
+function unpauseClientSlot(id, slot) {
+    const body = {
+        'status': 'unpaused'
+    };
+
+    return client(`clients/${id}/${slot}/status`, { method: 'PUT', body });
+}
+
 export {
     getUser,
     getProject,
-    getClients, getClient, getClientSlots, pauseClient, unpauseClient
+    getClients, getClient, getClientSlots, pauseClient, unpauseClient, pauseClientSlot, unpauseClientSlot
 };
