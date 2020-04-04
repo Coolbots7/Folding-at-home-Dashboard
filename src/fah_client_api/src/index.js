@@ -138,7 +138,11 @@ app.put('/clients/:id/status', (req, res) => {
     telnetClientSend(id, 'unpause').then((response) => {
       res.send().status(202);
     });
-
+  }
+  else if(body.status == 'finish') {
+    telnetClientSend(id, 'finish').then((response) => {
+      res.send().status(202);
+    });
   }
   else {
     res.send(`Unknown status: ${body.status}`).status(400);
@@ -159,7 +163,11 @@ app.put('/clients/:id/:slot/status', (req, res) => {
     telnetClientSend(id, `unpause ${slot}`).then((response) => {
       res.send().status(202);
     });
-
+  }
+  else if (body.status == 'finish') {
+    telnetClientSend(id, `finish ${slot}`).then((response) => {
+      res.send().status(202);
+    });
   }
   else {
     res.send(`Unknown status: ${body.status}`).status(400);

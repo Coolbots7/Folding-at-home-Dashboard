@@ -2,7 +2,7 @@ import React from 'react';
 import './Client.css';
 import PropTypes from 'prop-types';
 import socketIOClient from "socket.io-client";
-import { getClient, getClientSlots, pauseClient, unpauseClient, pauseClientSlot, unpauseClientSlot } from '../../utils/fah-client';
+import { getClient, getClientSlots, pauseClient, unpauseClient, pauseClientSlot, unpauseClientSlot, finishClient, finishClientSlot } from '../../utils/fah-client';
 import moment from 'moment';
 
 class Client extends React.Component {
@@ -26,6 +26,7 @@ class Client extends React.Component {
         this.update = this.update.bind(this);
         this.pause = this.pause.bind(this);
         this.unpause = this.unpause.bind(this);
+        this.finish = this.finish.bind(this);
         this.pauseSlot = this.pauseSlot.bind(this);
         this.unpauseSlot = this.unpauseSlot.bind(this);
     }
@@ -100,6 +101,7 @@ class Client extends React.Component {
         getClientSlots(id)
             .then((res) => { return res.json() })
             .then((slots) => {
+                // console.log('slots', slots);
                 self.setState({
                     slots
                 });
@@ -110,13 +112,20 @@ class Client extends React.Component {
     pause() {
         const { id } = this.props;
         pauseClient(id).then(() => {
-                this.update();
+            this.update();
         });
     }
 
     unpause() {
         const { id } = this.props;
         unpauseClient(id).then(() => {
+            this.update();
+        });
+    }
+
+    finish() {
+        const { id } = this.props;
+        finishClient(id).then(() => {
             this.update();
         });
     }
@@ -135,6 +144,13 @@ class Client extends React.Component {
         });
     }
 
+    finishSlot(slot) {
+        const { id } = this.props;
+        finishClientSlot(id, slot).then(() => {
+            this.update();
+        });
+    }
+
     render() {
         const { client, slots, queue, heartbeat, ppd, updating } = this.state;
 
@@ -149,6 +165,7 @@ class Client extends React.Component {
                                 <div className="ml-auto text-white">
                                     <span onClick={() => this.unpause()}><i class="fas fa-lg fa-play-circle mr-2"></i></span>
                                     <span onClick={() => this.pause()}><i class="fas fa-lg fa-pause-circle mr-2"></i></span>
+                                    <span onClick={() => { this.finish() }}><i class="fas fa-lg fa-chevron-circle-right mr-2"></i></span>
                                     <span onClick={() => { this.update() }}><i className={`fas fa-lg fa-sync-alt ${updating === true ? '' : ''}`}></i></span>
                                 </div>
                             </div>
@@ -196,9 +213,11 @@ class Client extends React.Component {
                                 case 'RUNNING':
                                     break;
                                 case 'PAUSED':
-                                    progress_background = 'bg-warning';
-                                    progress_width = '100%';
-                                    progress_text = <span className="text-center text-uppercase">PAUSED ({slot.reason})</span>;
+                                    // progress_background = 'bg-warning';
+                                    // progress_width = '100%';
+                                    // progress_text = <span className="text-center text-uppercase">PAUSED ({slot.reason})</span>;
+                                    break;
+                                case 'FINISHING':
                                     break;
                             }
 
@@ -207,11 +226,13 @@ class Client extends React.Component {
                                     <div className="row">
                                         <div className="pl-0 col-auto d-flex flex-column text-center">
                                             <strong>{slot.id}</strong>
+                                            <span style={{ fontSize: '0.8rem' }} className="text-muted text-uppercase">{slot.status} {slot.reason && <>({slot.reason})</>}</span>
                                             <span style={{ fontSize: '0.8rem' }} className="text-muted text-uppercase">{slot.description.substring(0, 6)}</span>
                                             <span style={{ fontSize: '0.8rem' }} className="text-muted text-uppercase"><i class="fas fa-coins"></i>/DAY {slot_queues && slot_queues[0].ppd.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
                                             <div className="text-white">
-                                                <span onClick={() => {this.unpauseSlot(slot.id)}}><i class="fas fa-play-circle mr-2"></i></span>
-                                                <span onClick={() => {this.pauseSlot(slot.id)}}><i class="fas fa-pause-circle mr-2"></i></span>
+                                                <span onClick={() => { this.unpauseSlot(slot.id) }}><i class="fas fa-play-circle mr-2"></i></span>
+                                                <span onClick={() => { this.pauseSlot(slot.id) }}><i class="fas fa-pause-circle mr-2"></i></span>
+                                                <span onClick={() => {this.finishSlot(slot.id)}}><i class="fas fa-chevron-circle-right"></i></span>
                                             </div>
 
                                             {/* <div className="d-flex flex-row justify-content-around">
@@ -221,28 +242,26 @@ class Client extends React.Component {
                                         <div className="col pr-0 d-flex flex-column">
 
                                             {slot_queues && slot_queues.map((q) => {
-                                                if (slot.status !== 'PAUSED') {
-                                                    switch (q.state) {
-                                                        case "DOWNLOAD":
-                                                            progress_background = 'bg-info';
-                                                            progress_width = '100%'
-                                                            progress_text = <span className="text-center">{q.nextattempt} ({q.attempts})</span>
-                                                            break;
-                                                        case "READY":
-                                                            progress_background = 'bg-primary';
-                                                            progress_width = '100%'
-                                                            progress_text = <span className="text-center">READY</span>
-                                                            break;
-                                                        case "RUNNING":
-                                                            progress_background = 'bg-success progress-bar-striped progress-bar-animated';
-                                                            progress_width = q.percentdone;
-                                                            progress_text = <span className="w-100 text-center">{q.percentdone}</span>;
-                                                            break;
-                                                        case 'SEND':
-                                                            progress_background = 'bg-primary progress-bar-striped progress-bar-animated';
-                                                            progress_text = <span className="text-center">SENDING</span>
-                                                            break;
-                                                    }
+                                                switch (q.state) {
+                                                    case "DOWNLOAD":
+                                                        progress_background = 'bg-info';
+                                                        progress_width = '100%'
+                                                        progress_text = <span className="text-center">{q.nextattempt} ({q.attempts})</span>
+                                                        break;
+                                                    case "READY":
+                                                        progress_background = 'bg-primary';
+                                                        progress_width = '100%';
+                                                        progress_text = <span className="text-center">READY ({q.percentdone})</span>
+                                                        break;
+                                                    case "RUNNING":
+                                                        progress_background = 'bg-success progress-bar-striped progress-bar-animated';
+                                                        progress_width = q.percentdone;
+                                                        progress_text = <span className="w-100 text-center">{q.percentdone}</span>;
+                                                        break;
+                                                    case 'SEND':
+                                                        progress_background = 'bg-primary progress-bar-striped progress-bar-animated';
+                                                        progress_text = <span className="text-center">SENDING</span>
+                                                        break;
                                                 }
 
                                                 return (
