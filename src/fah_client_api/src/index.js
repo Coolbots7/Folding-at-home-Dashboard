@@ -107,7 +107,6 @@ app.get('/clients/:id/slots', (req, res) => {
 
   telnetClientSend(id, 'slot-info').then((response) => {
     const messages = parsePYoNMessage(response.toString());
-    console.log(messages)
 
     for (var i = 0; i < messages.length; i++) {
       const message = messages[i];
@@ -183,23 +182,17 @@ const PYoNToJson = (pyon) => {
 const parsePYoNMessage = (data) => {
   var results = [];
 
-  // console.log("data", data);
   var messages = data.split(/[\r|\n]+---[\r|\n]*/);
-  // console.log("messages", messages);
 
   for (var i = 0; i < messages.length; i++) {
     let message = messages[i];
-    // console.log("message", message);
 
     let header = parsePYoNHeader(message);
     let body = parsePYoNBody(message);
-    // console.log("header", header);
-    // console.log("body", body);
 
     if (header) {
       header = { version: header[1], type: header[2] };
       let result = { header: header, body: body ? body[1] : body };
-      // console.log("result", result);
       results.push(result);
     }
   }
