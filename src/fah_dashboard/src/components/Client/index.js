@@ -18,7 +18,8 @@ class Client extends React.Component {
             slots: null,
             queue: null,
             ppd: null,
-            updating: false
+            updating: false,
+            last_updated: null
         };
 
         this.animateHeartbeatTimer = null;
@@ -57,7 +58,8 @@ class Client extends React.Component {
             if (queue.id == id) {
                 // console.log("queue", queue);
                 self.setState({
-                    queue: queue.queue
+                    queue: queue.queue,
+                    last_updated: new Date()
                 });
             }
         });
@@ -66,7 +68,8 @@ class Client extends React.Component {
             if (slots.id == id) {
                 // console.log("slots", slots);
                 self.setState({
-                    slots: slots.data
+                    slots: slots.data,
+                    last_updated: new Date()
                 });
             }
         });
@@ -80,7 +83,8 @@ class Client extends React.Component {
         socket.on('ppd', (ppd) => {
             if (ppd.id == id) {
                 self.setState({
-                    ppd: ppd.ppd
+                    ppd: ppd.ppd,
+                    last_updated: new Date()
                 });
             }
         });
@@ -94,7 +98,8 @@ class Client extends React.Component {
             .then((res) => { return res.json(); })
             .then((client) => {
                 self.setState({
-                    client
+                    client,
+                    last_updated: new Date()
                 });
             });
 
@@ -103,7 +108,8 @@ class Client extends React.Component {
             .then((slots) => {
                 // console.log('slots', slots);
                 self.setState({
-                    slots
+                    slots,
+                    last_updated: new Date()
                 });
             });
 
@@ -152,7 +158,7 @@ class Client extends React.Component {
     }
 
     render() {
-        const { client, slots, queue, heartbeat, ppd, updating } = this.state;
+        const { client, slots, queue, heartbeat, ppd, updating, last_updated } = this.state;
 
         return (
             <div className="card h-100">
@@ -226,8 +232,8 @@ class Client extends React.Component {
                                     <div className="row">
                                         <div className="pl-0 col-auto d-flex flex-column text-center">
                                             <strong>{slot.id}</strong>
+                                            <span style={{ fontSize: '0.8rem' }} className="text-white text-uppercase">{slot.description.match(/(cpu:\d+|gpu:\d+)/)[0]}</span>
                                             <span style={{ fontSize: '0.8rem' }} className="text-muted text-uppercase">{slot.status} {slot.reason && <>({slot.reason})</>}</span>
-                                            <span style={{ fontSize: '0.8rem' }} className="text-muted text-uppercase">{slot.description.substring(0, 6)}</span>
                                             <span style={{ fontSize: '0.8rem' }} className="text-muted text-uppercase"><i class="fas fa-coins"></i>/DAY {slot_queues && slot_queues[0].ppd.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
                                             <div className="text-white">
                                                 <span onClick={() => { this.unpauseSlot(slot.id) }}><i class="fas fa-play-circle mr-2"></i></span>
@@ -287,8 +293,9 @@ class Client extends React.Component {
                             );
                         })}
                     </ul>
-
-
+                    <div className="text-muted pt-3 text-right">
+                        <small>Last Updated: {last_updated ? moment(last_updated).format("YYYY-MM-DD HH:mm:ss"): 'Never'}</small>
+                    </div>
                 </div>
             </div>
         )
