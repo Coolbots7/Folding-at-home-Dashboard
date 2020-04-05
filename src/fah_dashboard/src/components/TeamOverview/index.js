@@ -98,67 +98,72 @@ class TeamOverview extends React.Component {
 
         return (
             <div className="card">
-                <div className="card-body">
+                <div className="card-body text-muted">
                     <div className="row">
                         <div className="col">
                             <h5 className="text-uppercase"><a href={`https://stats.foldingathome.org/team/${id}`}>{team && team.name}</a></h5>
                         </div>
                         <div className="col-auto ml-auto">
-                            <span onClick={() => { this.update() }}><i className={`fas fa-sync-alt ${updating === true ? '' : ''}`}></i></span>
+                            <span onClick={() => { this.update() }}><i className={`fas fa-sync-alt text-white ${updating === true ? '' : ''}`}></i></span>
                         </div>
                     </div>
                     <ul className="list-group list-group-flush">
                         <li className="list-group-item">
                             <div className="row">
-                                <div className="col-auto text-muted">
+                                <div className="col">
                                     <span><i class="fas fa-wallet fa-lg pr-1"></i> {team && team.score.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
                                 </div>
-                                <div className="col-auto text-muted">
+                                <div className="col">
                                     <span><i class="fas fa-hashtag fa-lg pr-1"></i> {team && team.rank.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
                                 </div>
                             </div>
-                        </li>
-                        <li class="list-group-item">
-                            <div className="row d-flex">
-                                <div className="col-auto text-muted d-flex flex-row">
-                                    <span>
-                                        <i class="fas fa-cogs fa-lg pr-2"></i>
-                                    </span>
-                                    <span>
-                                        {team && team.wus.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} <small>({team && moment.utc(team.last).local().format("YYYY-MM-DD HH:mm:ss Z")})</small>
-                                    </span>
-                                </div>
-                                <div className="col-auto text-muted">
-                                    <span><i class="fas fa-robot fa-lg pr-1"></i> {team && team.active_50}</span>
-                                </div>
-                            </div>
+
                         </li>
                         <li className="list-group-item">
+                            <div className="d-flex flex-row">
+                                <span>
+                                    <i class="fas fa-cogs fa-lg pr-2"></i>
+                                </span>
+                                <span>
+                                    {team && team.wus.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} <small>({team && moment.utc(team.last).local().format("YYYY-MM-DD HH:mm:ss Z")})</small>
+                                </span>
+                            </div>
+                        </li>
+                        {/* <li class="list-group-item">
                             <div className="row">
-                                <div className="col-auto text-muted">
+                                <div className="col">
+                                    <span><i class="fas fa-robot fa-lg pr-1"></i> {team && team.active_50}</span>
+                                </div>
+                                <div className="col">
                                     <span><i class="fas fa-users"></i> {team && team.members.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
                                 </div>
                             </div>
-                        </li>
+                        </li> */}
                         {user_id &&
                             <>
                                 <hr />
-                                <h5><a href="#">ME</a></h5>
+                                <h5><a href={`https://stats.foldingathome.org/donor/${user_id}`}>MY CONTRIBUTION</a></h5>
                                 <li className="list-group-item">
-                                    <div className="row justify-content-between">
-                                        <div className="col-auto text-muted">
+                                    <div className="row">
+                                        <div className="col text-muted">
                                             <span><i class="fas fa-wallet fa-lg pr-1"></i> {user_team && user_team.score.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
                                         </div>
-                                        <div className="col-auto text-muted">
+                                        <div className="col text-muted">
                                             <span><i class="fas fa-hashtag fa-lg pr-1"></i> {user_rank}</span>
                                         </div>
-                                        <div className="text-muted">
-                                            <span>
-                                                <i class="fas fa-cogs fa-lg pr-2"></i>
-                                            </span>
-                                            <span>
-                                                {user_team && user_team.wus.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} <small>({user_team && moment.utc(user_team.last).local().format("YYYY-MM-DD HH:mm:ss Z")})</small>
-                                            </span>
+                                    </div>
+                                </li>
+                                <li className="list-group-item">
+                                    <div className="row">
+                                        <div className="col-auto text-muted d-flex flex-row">
+                                            <div className="text-muted">
+                                                <span>
+                                                    <i class="fas fa-cogs fa-lg pr-2"></i>
+                                                </span>
+                                                <span>
+                                                    {user_team && user_team.wus.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} <small>({user_team && moment.utc(user_team.last).local().format("YYYY-MM-DD HH:mm:ss Z")})</small>
+                                                </span>
+                                            </div>
                                         </div>
                                         <div className="col-auto text-muted">
                                             <span><i class="fas fa-robot fa-lg pr-1"></i> {user_team && user_team.active_7}</span>

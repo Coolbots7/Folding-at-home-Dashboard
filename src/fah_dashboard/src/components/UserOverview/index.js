@@ -69,10 +69,10 @@ class UserOverview extends React.Component {
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">
                             <div className="row">
-                                <div className="col-auto text-muted">
+                                <div className="col text-muted">
                                     <span><i class="fas fa-wallet fa-lg pr-1"></i> {user && user.score.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
                                 </div>
-                                <div className="col-auto text-muted">
+                                <div className="col text-muted">
                                     <span><i class="fas fa-hashtag fa-lg pr-1"></i> {user && user.rank.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
                                 </div>
                             </div>
