@@ -51,6 +51,30 @@ function getClients() {
     return client('clients');
 }
 
+function pauseAllClients() {
+    const body = {
+        'status': 'paused'
+    };
+
+    return client(`clients/status`, { method: 'PUT', body });
+}
+
+function unpauseAllClients() {
+    const body = {
+        'status': 'unpaused'
+    };
+
+    return client(`clients/status`, { method: 'PUT', body });
+}
+
+function finishAllClients() {
+    const body = {
+        'status': 'finish'
+    };
+
+    return client(`clients/status`, { method: 'PUT', body });
+}
+
 function getClient(id) {
     return client(`clients/${id}`);
 }
@@ -111,5 +135,5 @@ export {
     getUser, getUserTeams,
     getTeam, getTeamMembers,
     getProject,
-    getClients, getClient, getClientSlots, pauseClient, unpauseClient, finishClient, pauseClientSlot, unpauseClientSlot, finishClientSlot
+    getClients, pauseAllClients, unpauseAllClients, finishAllClients, getClient, getClientSlots, pauseClient, unpauseClient, finishClient, pauseClientSlot, unpauseClientSlot, finishClientSlot
 };
