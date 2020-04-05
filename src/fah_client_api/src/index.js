@@ -97,6 +97,37 @@ app.get('/clients', (req, res) => {
   res.send(clients);
 });
 
+app.put('/clients/status', (req, res) => {
+  const body = req.body;
+
+  if (body.status == 'paused') {
+    for (var i=0;i<clients.length;i++) {
+      telnetClientSend(clients[i].id, 'pause').then((response) => {
+      });
+    }
+    res.send().status(202);
+  }
+  else if (body.status == 'unpaused') {
+    for (var i=0;i<clients.length;i++) {
+      telnetClientSend(clients[i].id, 'unpause').then((response) => {
+      });
+    }
+    res.send().status(202);
+  }
+  else if (body.status == 'finish') {
+
+    for (var i=0;i<clients.length;i++) {
+      telnetClientSend(clients[i].id, 'finish').then((response) => {
+      });
+    }
+    res.send().status(202);
+  }
+  else {
+    res.send(`Unknown status: ${body.status}`).status(400);
+  }
+
+});
+
 app.get('/clients/:id', (req, res) => {
   const { id } = req.params;
   res.send(clients.find(c => c.id == id));
@@ -139,7 +170,7 @@ app.put('/clients/:id/status', (req, res) => {
       res.send().status(202);
     });
   }
-  else if(body.status == 'finish') {
+  else if (body.status == 'finish') {
     telnetClientSend(id, 'finish').then((response) => {
       res.send().status(202);
     });
